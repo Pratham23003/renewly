@@ -26,6 +26,26 @@
 
 ---
 
+## Architecture
+
+```mermaid
+graph TD
+    Client[React/TanStack Start UI] <-->|HTTP API| Backend[Express API]
+    Backend <-->|Mongoose| MongoDB[(MongoDB Atlas)]
+    Backend -->|Trigger Workflow| QStash[Upstash QStash Queue]
+    QStash -->|Sleep & Callback Webhook| Backend
+    Backend -->|SMTP Port 465 SSL| Gmail[Gmail Server]
+    Gmail -->|Delivery| UserInbox[User's Inbox]
+```
+
+1. **Client Interaction**: Users manage subscriptions on the React/TanStack Start UI.
+2. **Database Save**: Subscriptions are persisted to MongoDB Atlas.
+3. **Workflow Trigger**: The Vercel Backend triggers the Upstash QStash workflow queue.
+4. **Sleep & Callback**: Upstash handles the delay (sleeping until 7, 5, 2, or 1 days before the renewal date) and hits the backend's webhook when the reminder date is reached.
+5. **Email Notification**: The backend sends the HTML reminder email via Gmail/Nodemailer over secure port 465.
+
+---
+
 ## Getting Started
 
 ### Prerequisites
