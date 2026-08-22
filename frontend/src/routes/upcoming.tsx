@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, useAuthUser } from "@/components/renewly/app-shell";
 import { PageHeader, Pill, Skeleton } from "@/components/renewly/primitives";
 import { useUpcomingRenewals } from "@/lib/queries";
-import { daysUntil, formatAmount, formatDate } from "@/lib/format";
+import { daysUntil, formatAmount, formatDate, formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/upcoming")({
   head: () => ({
@@ -35,7 +35,7 @@ function UpcomingPage() {
       />
 
       {upcoming.isLoading ? (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-44" />
           ))}
@@ -46,7 +46,7 @@ function UpcomingPage() {
           <p className="text-sm text-muted-foreground">No subscriptions are renewing in the next 30 days.</p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {items.map((s) => {
             const days = daysUntil(s.renewalDate);
             const t = tone(days);
@@ -60,8 +60,8 @@ function UpcomingPage() {
                 <span className={`mt-2 inline-flex rounded-[20px] px-2.5 py-0.5 text-xs font-medium ${t.chip}`}>
                   {days <= 0 ? "due today" : `in ${days} day${days === 1 ? "" : "s"}`}
                 </span>
-                <p className="mt-4 text-sm">
-                  {formatAmount(s.price, s.currency)} <span className="text-muted-foreground">/ {s.frequency.replace("ly", "")}</span>
+                <p className="mt-4 text-sm font-semibold text-foreground">
+                  {formatPrice(s)}
                 </p>
                 <p className="mt-3 text-xs text-subtle">{s.paymentMethod}</p>
               </article>

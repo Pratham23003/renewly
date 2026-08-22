@@ -169,7 +169,7 @@ export function FloatingLogos() {
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden hidden md:block">
       {LOGO_ITEMS.map((item) => {
         const isHovered = hovered === item.name;
 

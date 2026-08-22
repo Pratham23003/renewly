@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
-import { nitro } from "nitro/vite"; // <-- Added nitro import
+import { nitro } from "nitro/vite"; // nitro import
 
 export default defineConfig({
   plugins: [
@@ -11,7 +11,7 @@ export default defineConfig({
       server: { entry: "server" },
     }),
     nitro({
-      preset: "vercel", // <-- Forces Nitro to build Vercel Serverless Functions
+      preset: "vercel", // forces Nitro to build Vercel Serverless Functions
     }),
     react(),
     tailwindcss(),

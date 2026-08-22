@@ -95,8 +95,8 @@ export function SubscriptionsList() {
 
       {isError && <p className="mb-4 text-sm text-danger">{(error as Error).message}</p>}
 
-      <div className="card-surface overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="card-surface overflow-x-auto">
+        <table className="w-full min-w-[800px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-subtle">
               <th className="px-5 py-3 font-medium">Name</th>
@@ -142,7 +142,7 @@ export function SubscriptionsList() {
                       </span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                      <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 transition-opacity focus-within:opacity-100 md:group-hover:opacity-100">
                         <button
                           aria-label={`Edit ${s.name}`}
                           onClick={() => setEditing(s)}

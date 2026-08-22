@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Bell, CreditCard, LayoutDashboard, LogOut, Search, User } from "lucide-react";
+import { Bell, CreditCard, LayoutDashboard, LogOut, Search, User, Menu, X } from "lucide-react";
 import { clearSession, getStoredUser, getToken, type User as UserType } from "@/lib/api";
 import { Logo } from "./logo";
 import { CommandPalette } from "./command-palette";
@@ -32,6 +32,7 @@ export function useAuthUser() {
 export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   function logout() {
     clearSession();
@@ -44,7 +45,89 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 flex w-[240px] flex-col border-r border-border bg-surface">
+      {/* Mobile Top Header */}
+      <header className="fixed top-0 left-0 right-0 z-20 flex h-14 items-center justify-between border-b border-border bg-surface/90 px-4 backdrop-blur md:hidden">
+        <Logo className="text-lg" />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={triggerCommandPalette}
+            className="rounded-full border border-border/80 bg-surface/80 p-2 text-muted-foreground transition-all hover:bg-surface hover:text-foreground shadow-sm"
+          >
+            <Search className="size-4" />
+          </button>
+          
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
+          >
+            <Menu className="size-6" />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Menu Drawer */}
+          <aside className="fixed inset-y-0 left-0 flex w-[260px] flex-col border-r border-border bg-surface p-4 shadow-xl">
+            <div className="flex items-center justify-between pb-6 pt-2">
+              <div>
+                <Logo className="text-xl" />
+                <p className="mt-1 text-xs text-subtle">Never miss a renewal.</p>
+              </div>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="rounded-md p-1.5 text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            
+            <nav className="flex flex-1 flex-col gap-1">
+              {NAV.map((item) => {
+                const active = pathname === item.to || pathname.startsWith(`${item.to}/`);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`press flex items-center gap-3 rounded-[8px] border-l-[3px] px-3 py-2.5 text-sm ${
+                      active
+                        ? "border-l-primary bg-primary/8 font-medium text-foreground"
+                        : "border-l-transparent text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
+                    }`}
+                  >
+                    <Icon className={`size-4 ${active ? "text-primary" : ""}`} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+            
+            <div className="pt-4 border-t border-border">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  logout();
+                }}
+                className="press flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
+              >
+                <LogOut className="size-4" />
+                Log out
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop Sidebar */}
+      <aside className="fixed inset-y-0 left-0 hidden w-[240px] flex-col border-r border-border bg-surface md:flex">
         <div className="px-6 py-6">
           <Logo className="text-xl" />
           <p className="mt-1 text-xs text-subtle">Never miss a renewal.</p>
@@ -80,9 +163,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <main className="fade-in-page ml-[240px] min-h-screen p-8 pt-6">
+      {/* Main Content Area */}
+      <main className="fade-in-page ml-0 md:ml-[240px] min-h-screen p-4 md:p-8 pt-20 md:pt-6">
         {/* Top Right Header Actions Bar */}
-        <div className="flex items-center justify-end mb-2">
+        <div className="hidden md:flex items-center justify-end mb-2">
           <button
             onClick={triggerCommandPalette}
             className="group inline-flex items-center gap-2.5 rounded-full border border-border/80 bg-surface/80 px-3.5 py-1.5 text-xs text-muted-foreground backdrop-blur-md transition-all hover:border-primary/40 hover:bg-surface hover:text-foreground shadow-sm"

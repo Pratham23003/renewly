@@ -78,7 +78,7 @@ function DashboardPage() {
       />
 
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <StatCard icon={CreditCard} value={all.length} label="Total Subscriptions" loading={subs.isLoading} />
         <StatCard
           icon={TrendingUp}
@@ -104,8 +104,8 @@ function DashboardPage() {
             View all
           </Link>
         </div>
-        <div className="card-surface overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="card-surface overflow-x-auto">
+          <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-subtle">
                 <th className="px-5 py-3 font-medium">Name</th>
@@ -157,7 +157,7 @@ function DashboardPage() {
       <section className="mt-10">
         <h2 className="mb-4 text-base font-semibold">Renewing Soon</h2>
         {upcoming.isLoading ? (
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className="h-28" />
             ))}
@@ -168,7 +168,7 @@ function DashboardPage() {
             <p className="text-sm text-muted-foreground">No renewals in the next 30 days</p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {renewals.map((s, i) => (
               <Reveal
                 key={s._id}
