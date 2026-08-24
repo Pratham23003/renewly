@@ -9,7 +9,7 @@ const REMINDERS = [7, 5, 2, 1];                         // reminder constants fo
 
 export const sendReminders = serve( async(context) => {
     const { subscriptionId } = context.requestPayload;
-    let subscription = await fetchSubscription(context, subscriptionId); 
+    let subscription = await fetchSubscription(context, subscriptionId, 'init'); 
 
     if(!subscription || subscription.status !== 'active'){
         return;
@@ -24,16 +24,16 @@ export const sendReminders = serve( async(context) => {
     for(const daysBefore of REMINDERS){
         const reminderDate = renewalDate.subtract(daysBefore, 'day');
         if(reminderDate.isAfter(dayjs())){
-            await sleepUntilReminder(context, `Reminder ${daysBefore} days before`, reminderDate);
+            await sleepUntilReminder(context, `sleep-until-${daysBefore}-days-before`, reminderDate);
         }
 
-        subscription = await fetchSubscription(context, subscriptionId);
+        subscription = await fetchSubscription(context, subscriptionId, `reminder-${daysBefore}`);
         if(!subscription || subscription.status !== 'active'){
             return;
         }
 
         if(dayjs().isSame(reminderDate, 'day')){
-            await triggerReminder(context, `Reminder ${daysBefore} days before`, subscription);    
+            await triggerReminder(context, `send-email-${daysBefore}-days-before`, subscription);    
         }
     }
 });
@@ -44,17 +44,19 @@ const sleepUntilReminder = async (context, label, date) => {
 
 const triggerReminder = async (context, label, subscription) => {
     return await context.run(label, async () => {
-
         await sendReminderEmail({
             to: subscription.User.email,
-            type: label,
+            type: label.includes('7') ? 'Reminder 7 days before' : 
+                  label.includes('5') ? 'Reminder 5 days before' : 
+                  label.includes('2') ? 'Reminder 2 days before' : 
+                  'Reminder 1 days before', // Map unique label back to the static email template types
             subscription,
         })
     }); 
 }
 
-const fetchSubscription = async (context, subscriptionId) => {
-    return await context.run('get subscription', async () => {
+const fetchSubscription = async (context, subscriptionId, labelSuffix) => {
+    return await context.run(`get-subscription-${labelSuffix}`, async () => {
         return await Subscription.findById(subscriptionId).populate('User', 'name email').lean();
     })
 }
