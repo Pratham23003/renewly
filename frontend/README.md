@@ -4,8 +4,8 @@ A dark-mode SaaS dashboard for tracking subscriptions, monitoring monthly spend,
 
 ## Tech Stack
 
-- **Framework:** TanStack Start (React + SSR)
-- **Routing:** TanStack Router
+- **Framework:** Vite + React (SPA)
+- **Routing:** React Router v6
 - **Styling:** Tailwind CSS v4 + shadcn/ui
 - **State / Data:** TanStack Query
 - **Language:** TypeScript
