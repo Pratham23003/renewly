@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Bell, CreditCard, LayoutDashboard, LogOut, Search, User, Menu, X } from "lucide-react";
 import { clearSession, getStoredUser, getToken, type User as UserType } from "@/lib/api";
 import { Logo } from "./logo";
@@ -19,7 +19,7 @@ export function useAuthUser() {
 
   useEffect(() => {
     if (!getToken()) {
-      navigate({ to: "/sign-in", replace: true });
+      navigate("/sign-in", { replace: true });
       return;
     }
     setUser(getStoredUser());
@@ -31,12 +31,12 @@ export function useAuthUser() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { pathname } = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   function logout() {
     clearSession();
-    navigate({ to: "/sign-in", replace: true });
+    navigate("/sign-in", { replace: true });
   }
 
   function triggerCommandPalette() {

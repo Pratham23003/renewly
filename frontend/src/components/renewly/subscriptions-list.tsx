@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { CreditCard, Pencil, Plus, Trash2, XCircle } from "lucide-react";
 import { api, CATEGORIES, type Subscription } from "@/lib/api";
@@ -22,6 +22,7 @@ export function SubscriptionsList() {
 
   const [status, setStatus] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
+  const [addingNew, setAddingNew] = useState(false);
   const [editing, setEditing] = useState<Subscription | null>(null);
   const [pending, setPending] = useState<PendingAction>(null);
   const [working, setWorking] = useState(false);
@@ -56,7 +57,7 @@ export function SubscriptionsList() {
       <PageHeader
         title="Subscriptions"
         actions={
-          <Button onClick={() => navigate({ to: "/subscriptions/new" })}>
+          <Button onClick={() => setAddingNew(true)}>
             <Plus className="size-4" />
             Add Subscription
           </Button>
@@ -177,7 +178,7 @@ export function SubscriptionsList() {
                     <CreditCard className="size-10 text-subtle" />
                     <h2 className="text-base font-semibold">No subscriptions yet</h2>
                     <p className="text-sm text-muted-foreground">Start tracking your first subscription</p>
-                    <Button className="mt-2" onClick={() => navigate({ to: "/subscriptions/new" })}>
+                    <Button className="mt-2" onClick={() => setAddingNew(true)}>
                       <Plus className="size-4" />
                       Add Subscription
                     </Button>
@@ -189,6 +190,7 @@ export function SubscriptionsList() {
         </table>
       </div>
 
+      <SubscriptionDrawer open={addingNew} onClose={() => setAddingNew(false)} />
       <SubscriptionDrawer open={!!editing} subscription={editing} onClose={() => setEditing(null)} />
 
       <ConfirmDialog

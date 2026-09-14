@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { api, clearSession, USER_KEY, type User } from "@/lib/api";
 import { AppShell, useAuthUser } from "@/components/renewly/app-shell";
 import { Button, Field, Input, PageHeader } from "@/components/renewly/primitives";
@@ -7,19 +7,7 @@ import { ConfirmDialog } from "@/components/renewly/confirm-dialog";
 import { useToast } from "@/components/renewly/toast";
 import { formatDate } from "@/lib/format";
 
-export const Route = createFileRoute("/profile")({
-  head: () => ({
-    meta: [
-      { title: "Profile — Renewly" },
-      { name: "description", content: "Manage your Renewly account details or delete your account." },
-      { property: "og:title", content: "Profile — Renewly" },
-      { property: "og:description", content: "Manage your Renewly account details." },
-    ],
-  }),
-  component: ProfilePage,
-});
-
-function ProfilePage() {
+export default function ProfilePage() {
   const { user, setUser } = useAuthUser();
   const toast = useToast();
   const navigate = useNavigate();
@@ -64,7 +52,7 @@ function ProfilePage() {
     try {
       await api(`/users/${userId}`, { method: "DELETE" });
       clearSession();
-      navigate({ to: "/sign-in", replace: true });
+      navigate("/sign-in", { replace: true });
     } catch (err) {
       toast("error", err instanceof Error ? err.message : "Failed to delete account");
       setDeleting(false);

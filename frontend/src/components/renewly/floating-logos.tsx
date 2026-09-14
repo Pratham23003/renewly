@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useState, type ReactElement } from "react";
+import { Link } from "react-router-dom";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
 /**
@@ -23,7 +23,7 @@ type LogoConfig = {
   anim: "bob" | "drift" | "spin";
   delay: string;
   dur: string;
-  svg: JSX.Element;
+  svg: ReactElement;
 };
 
 const LOGO_ITEMS: LogoConfig[] = [

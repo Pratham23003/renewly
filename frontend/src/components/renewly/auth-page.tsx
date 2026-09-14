@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, BellRing, Eye, EyeOff, Github, Lock, ShieldCheck, TrendingUp } from "lucide-react";
 import { api, setSession, type User } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ export function AuthPage({ mode }: { mode: "sign-in" | "sign-up" }) {
         auth: false,
       });
       setSession(data.token, data.user);
-      navigate({ to: "/dashboard", replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

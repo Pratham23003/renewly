@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   BellRing,
@@ -24,26 +24,9 @@ import { Reveal } from "@/components/renewly/motion";
 import { Spotlight } from "@/components/renewly/spotlight";
 import { Button } from "@/components/renewly/primitives";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Renewly - Never miss a subscription renewal" },
-      {
-        name: "description",
-        content:
-          "Renewly tracks every subscription, normalizes monthly spend and warns you before renewals hit your card.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:title", content: "Renewly - Never miss a subscription renewal" },
-      {
-        property: "og:description",
-        content: "Track subscriptions, monthly spend and upcoming renewals in one calm dashboard.",
-      },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Landing,
-});
+// ------------------------------------------------------------------
+// Static data
+// ------------------------------------------------------------------
 
 const features = [
   {
@@ -98,18 +81,19 @@ const categoryBars = [
 ];
 
 type MockTab = "overview" | "upcoming" | "categories";
-
 const tabs: { id: MockTab; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "upcoming", label: "Upcoming" },
   { id: "categories", label: "Categories" },
 ];
 
+// ------------------------------------------------------------------
+// MockDashboard — animated preview shown in the hero
+// ------------------------------------------------------------------
 function MockDashboard() {
   const [tab, setTab] = useState<MockTab>("overview");
   const [isPaused, setIsPaused] = useState(false);
 
-  // Auto-play tab cycling every 4 seconds
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -129,7 +113,7 @@ function MockDashboard() {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Top Header & Tab Controls */}
+        {/* Tab Controls */}
         <div className="flex items-center justify-between border-b border-border pb-4">
           <div className="flex items-center gap-2" role="tablist" aria-label="Dashboard preview">
             {tabs.map((t) => (
@@ -149,13 +133,12 @@ function MockDashboard() {
               </button>
             ))}
           </div>
-
           <span className="hidden items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-0.5 text-[10px] text-subtle sm:inline-flex">
             <span className="size-1.5 rounded-full bg-success animate-pulse" /> Live Preview
           </span>
         </div>
 
-        {/* Tab Content Container with Animation */}
+        {/* Tab Content */}
         <div className="pt-4 min-h-[220px]">
           {tab === "overview" && (
             <div className="animate-fade-in space-y-4">
@@ -243,6 +226,9 @@ function MockDashboard() {
   );
 }
 
+// ------------------------------------------------------------------
+// BentoCard — feature card for the features grid
+// ------------------------------------------------------------------
 function BentoCard({
   feature,
   large,
@@ -264,15 +250,15 @@ function BentoCard({
   );
 }
 
+// ------------------------------------------------------------------
+// AnimatedWorkflow — 3-step animated how-it-works section
+// ------------------------------------------------------------------
 function AnimatedWorkflow() {
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
-
   const [typedText, setTypedText] = useState("");
   const [isSaved, setIsSaved] = useState(false);
-
   const [spend, setSpend] = useState(0);
   const [barWidth, setBarWidth] = useState(0);
-
   const [showAlert, setShowAlert] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
@@ -280,7 +266,6 @@ function AnimatedWorkflow() {
     const fullTitle = "Netflix Premium";
 
     const runLoop = () => {
-      // Step 1 Starts (0ms)
       setActiveStep(1);
       setTypedText("");
       setIsSaved(false);
@@ -289,7 +274,6 @@ function AnimatedWorkflow() {
       setShowAlert(false);
       setIsSent(false);
 
-      // Step 1: Typing simulation
       let i = 0;
       const typeInterval = setInterval(() => {
         if (i <= fullTitle.length) {
@@ -301,7 +285,6 @@ function AnimatedWorkflow() {
         }
       }, 75);
 
-      // Step 2 Starts (2200ms)
       setTimeout(() => {
         setActiveStep(2);
         setBarWidth(100);
@@ -319,7 +302,6 @@ function AnimatedWorkflow() {
         }, 35);
       }, 2200);
 
-      // Step 3 Starts (4500ms)
       setTimeout(() => {
         setActiveStep(3);
         setShowAlert(true);
@@ -334,220 +316,162 @@ function AnimatedWorkflow() {
 
   return (
     <div className="relative mt-8">
-      {/* Top Laser Workflow Progress Pipeline (Placed above cards so it never cuts through card text) */}
+      {/* Pipeline rail */}
       <div aria-hidden className="pointer-events-none relative mb-6 hidden md:block">
-        {/* Rail Background */}
         <div className="h-[2px] w-full bg-border/60" />
-        
-        {/* Active Fill Line */}
         <div
           className="absolute top-0 h-[2px] bg-gradient-to-r from-primary/40 via-primary to-primary transition-all duration-700 ease-out"
-          style={{
-            width: activeStep === 1 ? "16%" : activeStep === 2 ? "50%" : "100%",
-          }}
+          style={{ width: activeStep === 1 ? "16%" : activeStep === 2 ? "50%" : "100%" }}
         />
-
-        {/* Step Connector Nodes */}
-        <div
-          className={cn(
-            "absolute top-1/2 left-[16%] size-3 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 transition-all duration-500",
-            activeStep >= 1 ? "border-primary bg-primary shadow-[0_0_10px_var(--primary)]" : "border-border bg-background"
-          )}
-        />
-        <div
-          className={cn(
-            "absolute top-1/2 left-[50%] size-3 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 transition-all duration-500",
-            activeStep >= 2 ? "border-primary bg-primary shadow-[0_0_10px_var(--primary)]" : "border-border bg-background"
-          )}
-        />
+        {[{ pos: "16%", step: 1 }, { pos: "50%", step: 2 }].map(({ pos, step }) => (
+          <div
+            key={step}
+            className={cn(
+              "absolute top-1/2 size-3 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 transition-all duration-500",
+              activeStep >= step ? "border-primary bg-primary shadow-[0_0_10px_var(--primary)]" : "border-border bg-background",
+            )}
+            style={{ left: pos }}
+          />
+        ))}
         <div
           className={cn(
             "absolute top-1/2 left-[84%] size-3 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 transition-all duration-500",
-            activeStep >= 3 ? "border-warning bg-warning shadow-[0_0_10px_var(--warning)]" : "border-border bg-background"
+            activeStep >= 3 ? "border-warning bg-warning shadow-[0_0_10px_var(--warning)]" : "border-border bg-background",
           )}
         />
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Step 1 Card: Add Subscription */}
+        {/* Step 1 */}
         <Spotlight
           className={cn(
             "group relative rounded-[14px] border bg-surface/90 p-6 backdrop-blur-md transition-all duration-500",
             activeStep === 1
               ? "border-primary/60 shadow-[0_0_25px_rgba(59,130,246,0.15)] ring-1 ring-primary/40 scale-[1.01]"
-              : "border-border/80 opacity-75"
+              : "border-border/80 opacity-75",
           )}
         >
-        <div className="flex items-center justify-between border-b border-border/60 pb-3">
-          <span className="font-mono text-xs font-semibold text-primary">01</span>
-          <span
-            className={cn(
-              "rounded-full px-2.5 py-0.5 text-[10px] font-medium transition-colors",
-              activeStep === 1 ? "bg-primary text-primary-foreground font-semibold" : "bg-primary/10 text-primary"
-            )}
-          >Log
-          </span>
-        </div>
-        <h3 className="mt-4 text-lg font-semibold text-foreground">Add your subscription</h3>
-        <p className="mt-1 text-xs text-muted-foreground">Log plans in seconds — name, price, cycle, renewal date.</p>
-
-        {/* Micro-UI Simulation */}
-        <div className="mt-6 rounded-[10px] border border-border/80 bg-background/90 p-3.5 space-y-2.5 shadow-inner">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Plus className="size-3.5 text-primary" />
-              <span className="text-xs font-medium text-foreground">New Subscription</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 rounded-[6px] border border-border/60 bg-surface px-2.5 py-1.5 text-xs">
-            <span className="font-medium text-foreground">{typedText}</span>
-            <span className="h-4 w-0.5 animate-pulse bg-primary" />
-          </div>
-
-          <div className="flex items-center justify-between pt-1">
-            <span className="font-mono text-xs font-medium text-primary">₹649/mo</span>
-            <button
-              className={cn(
-                "flex items-center gap-1 rounded-[6px] px-2.5 py-1 text-[11px] font-medium transition-all duration-300",
-                isSaved
-                  ? "bg-success/20 text-success border border-success/40 scale-105"
-                  : "bg-primary text-primary-foreground"
-              )}
-            >
-              {isSaved ? (
-                <>
-                  <CheckCircle2 className="size-3" /> Saved
-                </>
-              ) : (
-                "Save Plan"
-              )}
-            </button>
-          </div>
-        </div>
-      </Spotlight>
-
-      {/* Step 2 Card: Track Money Spent */}
-      <Spotlight
-        className={cn(
-          "group relative z-10 rounded-[14px] border bg-surface/90 p-6 backdrop-blur-md transition-all duration-500",
-          activeStep === 2
-            ? "border-primary/60 shadow-[0_0_25px_rgba(59,130,246,0.15)] ring-1 ring-primary/40 scale-[1.01]"
-            : "border-border/80 opacity-75"
-        )}
-      >
-        <div className="flex items-center justify-between border-b border-border/60 pb-3">
-          <span className="font-mono text-xs font-semibold text-primary">02</span>
-          <span
-            className={cn(
-              "rounded-full px-2.5 py-0.5 text-[10px] font-medium transition-colors",
-              activeStep === 2 ? "bg-primary text-primary-foreground font-semibold" : "bg-primary/10 text-primary"
-            )}
-          >
-            Track
-          </span>
-        </div>
-        <h3 className="mt-4 text-lg font-semibold text-foreground">Track money spent</h3>
-        <p className="mt-1 text-xs text-muted-foreground">Every cycle converted into one clean monthly spend figure.</p>
-
-        {/* Micro-UI Simulation */}
-        <div className="mt-6 rounded-[10px] border border-border/80 bg-background/90 p-3.5 space-y-3 shadow-inner">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-subtle">Total Monthly Spend</span>
-            <TrendingUp className="size-3.5 text-success" />
-          </div>
-
-          <div className="font-mono text-xl font-bold text-foreground tracking-tight">
-            ₹{spend.toLocaleString("en-IN")}
-            <span className="text-xs font-normal text-subtle">/month</span>
-          </div>
-
-          <div className="space-y-1.5 pt-1">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-muted-foreground">Entertainment & Tech</span>
-              <span className="font-mono text-xs font-medium text-primary">72%</span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-elevated">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-1000 ease-out"
-                style={{ width: `${barWidth}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      </Spotlight>
-
-      {/* Step 3 Card: Email Alert Before Renewal */}
-      <Spotlight
-        className={cn(
-          "group relative z-10 rounded-[14px] border bg-surface/90 p-6 backdrop-blur-md transition-all duration-500",
-          activeStep === 3
-            ? "border-warning/60 shadow-[0_0_25px_rgba(245,158,11,0.15)] ring-1 ring-warning/40 scale-[1.01]"
-            : "border-border/80 opacity-75"
-        )}
-      >
-        <div className="flex items-center justify-between border-b border-border/60 pb-3">
-          <span className="font-mono text-xs font-semibold text-primary">03</span>
-          <span
-            className={cn(
-              "rounded-full px-2 py-0.5 text-[10px] font-medium flex items-center gap-1 transition-colors",
-              activeStep === 3 ? "bg-warning text-warning-foreground font-semibold" : "bg-warning/15 text-warning"
-            )}
-          >
-            <BellRing className="size-3 animate-pulse" />Alert
-          </span>
-        </div>
-        <h3 className="mt-4 text-lg font-semibold text-foreground">Get mail before renewal</h3>
-        <p className="mt-1 text-xs text-muted-foreground">Automated notification to your inbox before the charge hits.</p>
-
-        {/* Micro-UI Simulation */}
-        <div className="mt-6 rounded-[10px] border border-border/80 bg-background/90 p-3.5 space-y-2.5 shadow-inner">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-              <Mail className="size-3.5 text-primary" />
-              <span>Renewly Reminder</span>
-            </div>
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[10px] font-medium transition-all duration-300",
-                isSent
-                  ? "bg-success/20 text-success border border-success/30"
-                  : "bg-surface text-subtle"
-              )}
-            >
-              {isSent ? "Dispatched" : "Queued"}
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <span className="font-mono text-xs font-semibold text-primary">01</span>
+            <span className={cn("rounded-full px-2.5 py-0.5 text-[10px] font-medium transition-colors", activeStep === 1 ? "bg-primary text-primary-foreground font-semibold" : "bg-primary/10 text-primary")}>
+              Log
             </span>
           </div>
-
-          <div
-            className={cn(
-              "rounded-[8px] border p-2.5 transition-all duration-500",
-              showAlert
-                ? "border-warning/40 bg-warning/10 translate-y-0 opacity-100"
-                : "border-border/40 bg-surface/40 translate-y-2 opacity-60"
-            )}
-          >
-            <div className="flex items-center justify-between text-xs font-semibold text-foreground">
-              <span>🔔 Netflix renews in 2 days</span>
-              <span className="font-mono text-[10px] text-warning">₹649.00</span>
+          <h3 className="mt-4 text-lg font-semibold text-foreground">Add your subscription</h3>
+          <p className="mt-1 text-xs text-muted-foreground">Log plans in seconds — name, price, cycle, renewal date.</p>
+          <div className="mt-6 rounded-[10px] border border-border/80 bg-background/90 p-3.5 space-y-2.5 shadow-inner">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Plus className="size-3.5 text-primary" />
+                <span className="text-xs font-medium text-foreground">New Subscription</span>
+              </div>
             </div>
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              Cancel or update payment before renewal.
-            </p>
+            <div className="flex items-center gap-2 rounded-[6px] border border-border/60 bg-surface px-2.5 py-1.5 text-xs">
+              <span className="font-medium text-foreground">{typedText}</span>
+              <span className="h-4 w-0.5 animate-pulse bg-primary" />
+            </div>
+            <div className="flex items-center justify-between pt-1">
+              <span className="font-mono text-xs font-medium text-primary">₹649/mo</span>
+              <button
+                className={cn(
+                  "flex items-center gap-1 rounded-[6px] px-2.5 py-1 text-[11px] font-medium transition-all duration-300",
+                  isSaved ? "bg-success/20 text-success border border-success/40 scale-105" : "bg-primary text-primary-foreground",
+                )}
+              >
+                {isSaved ? <><CheckCircle2 className="size-3" /> Saved</> : "Save Plan"}
+              </button>
+            </div>
           </div>
-        </div>
-      </Spotlight>
+        </Spotlight>
+
+        {/* Step 2 */}
+        <Spotlight
+          className={cn(
+            "group relative z-10 rounded-[14px] border bg-surface/90 p-6 backdrop-blur-md transition-all duration-500",
+            activeStep === 2
+              ? "border-primary/60 shadow-[0_0_25px_rgba(59,130,246,0.15)] ring-1 ring-primary/40 scale-[1.01]"
+              : "border-border/80 opacity-75",
+          )}
+        >
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <span className="font-mono text-xs font-semibold text-primary">02</span>
+            <span className={cn("rounded-full px-2.5 py-0.5 text-[10px] font-medium transition-colors", activeStep === 2 ? "bg-primary text-primary-foreground font-semibold" : "bg-primary/10 text-primary")}>
+              Track
+            </span>
+          </div>
+          <h3 className="mt-4 text-lg font-semibold text-foreground">Track money spent</h3>
+          <p className="mt-1 text-xs text-muted-foreground">Every cycle converted into one clean monthly spend figure.</p>
+          <div className="mt-6 rounded-[10px] border border-border/80 bg-background/90 p-3.5 space-y-3 shadow-inner">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-subtle">Total Monthly Spend</span>
+              <TrendingUp className="size-3.5 text-success" />
+            </div>
+            <div className="font-mono text-xl font-bold text-foreground tracking-tight">
+              ₹{spend.toLocaleString("en-IN")}
+              <span className="text-xs font-normal text-subtle">/month</span>
+            </div>
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-muted-foreground">Entertainment & Tech</span>
+                <span className="font-mono text-xs font-medium text-primary">72%</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-elevated">
+                <div className="h-full rounded-full bg-primary transition-all duration-1000 ease-out" style={{ width: `${barWidth}%` }} />
+              </div>
+            </div>
+          </div>
+        </Spotlight>
+
+        {/* Step 3 */}
+        <Spotlight
+          className={cn(
+            "group relative z-10 rounded-[14px] border bg-surface/90 p-6 backdrop-blur-md transition-all duration-500",
+            activeStep === 3
+              ? "border-warning/60 shadow-[0_0_25px_rgba(245,158,11,0.15)] ring-1 ring-warning/40 scale-[1.01]"
+              : "border-border/80 opacity-75",
+          )}
+        >
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <span className="font-mono text-xs font-semibold text-primary">03</span>
+            <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-medium flex items-center gap-1 transition-colors", activeStep === 3 ? "bg-warning text-warning-foreground font-semibold" : "bg-warning/15 text-warning")}>
+              <BellRing className="size-3 animate-pulse" />Alert
+            </span>
+          </div>
+          <h3 className="mt-4 text-lg font-semibold text-foreground">Get mail before renewal</h3>
+          <p className="mt-1 text-xs text-muted-foreground">Automated notification to your inbox before the charge hits.</p>
+          <div className="mt-6 rounded-[10px] border border-border/80 bg-background/90 p-3.5 space-y-2.5 shadow-inner">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                <Mail className="size-3.5 text-primary" />
+                <span>Renewly Reminder</span>
+              </div>
+              <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-medium transition-all duration-300", isSent ? "bg-success/20 text-success border border-success/30" : "bg-surface text-subtle")}>
+                {isSent ? "Dispatched" : "Queued"}
+              </span>
+            </div>
+            <div className={cn("rounded-[8px] border p-2.5 transition-all duration-500", showAlert ? "border-warning/40 bg-warning/10 translate-y-0 opacity-100" : "border-border/40 bg-surface/40 translate-y-2 opacity-60")}>
+              <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+                <span>🔔 Netflix renews in 2 days</span>
+                <span className="font-mono text-[10px] text-warning">₹649.00</span>
+              </div>
+              <p className="mt-1 text-[11px] text-muted-foreground">Cancel or update payment before renewal.</p>
+            </div>
+          </div>
+        </Spotlight>
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
-function Landing() {
+// ------------------------------------------------------------------
+// LandingPage
+// ------------------------------------------------------------------
+export default function LandingPage() {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    if (getToken()) navigate({ to: "/dashboard", replace: true });
+    if (getToken()) navigate("/dashboard", { replace: true });
     else setChecked(true);
   }, [navigate]);
 
@@ -565,20 +489,12 @@ function Landing() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Logo className="text-lg" />
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
-            <a className="transition-colors hover:text-foreground" href="#features">
-              Features
-            </a>
-            <a className="transition-colors hover:text-foreground" href="#how">
-              How it works
-            </a>
+            <a className="transition-colors hover:text-foreground" href="#features">Features</a>
+            <a className="transition-colors hover:text-foreground" href="#how">How it works</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/sign-in">
-              <Button variant="ghost">Sign in</Button>
-            </Link>
-            <Link to="/sign-up">
-              <Button>Get started</Button>
-            </Link>
+            <Link to="/sign-in"><Button variant="ghost">Sign in</Button></Link>
+            <Link to="/sign-up"><Button>Get started</Button></Link>
           </div>
         </div>
       </header>
@@ -606,18 +522,13 @@ function Landing() {
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link to="/sign-up">
-                  <Button className="h-11 px-6">
-                    Start tracking free <ArrowRight className="size-4" />
-                  </Button>
+                  <Button className="h-11 px-6">Start tracking free <ArrowRight className="size-4" /></Button>
                 </Link>
                 <Link to="/sign-in">
-                  <Button variant="outline" className="h-11 px-6">
-                    Sign in
-                  </Button>
+                  <Button variant="outline" className="h-11 px-6">Sign in</Button>
                 </Link>
               </div>
               <p className="mt-3 text-xs text-subtle">No card required · Free forever tier</p>
-
               <MockDashboard />
             </div>
           </section>
@@ -647,12 +558,8 @@ function Landing() {
         <section id="how" className="border-t border-border/60 py-24">
           <div className="mx-auto max-w-6xl px-6">
             <div className="max-w-2xl">
-              <h2 className="text-3xl font-semibold tracking-[-0.02em] text-foreground">
-                Three steps, then it's quiet.
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Zero manual math. Zero surprise credit card charges.
-              </p>
+              <h2 className="text-3xl font-semibold tracking-[-0.02em] text-foreground">Three steps, then it's quiet.</h2>
+              <p className="mt-3 text-sm text-muted-foreground">Zero manual math. Zero surprise credit card charges.</p>
             </div>
             <AnimatedWorkflow />
           </div>
@@ -668,9 +575,7 @@ function Landing() {
               Most people underestimate their subscription spend by 40%. Takes five minutes to know for sure.
             </p>
             <Link to="/sign-up">
-              <Button className="mt-8 h-11 px-6">
-                Create your account <ArrowRight className="size-4" />
-              </Button>
+              <Button className="mt-8 h-11 px-6">Create your account <ArrowRight className="size-4" /></Button>
             </Link>
           </div>
         </section>
@@ -686,8 +591,7 @@ function Landing() {
             rel="noreferrer"
             className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
           >
-            <Github className="size-4" />
-            Built by Pratham
+            <Github className="size-4" /> Built by Pratham
           </a>
         </div>
       </footer>

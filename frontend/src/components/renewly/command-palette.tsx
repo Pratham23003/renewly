@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { Bell, CreditCard, LayoutDashboard, LogOut, Plus, Search, User } from "lucide-react";
 import { clearSession } from "@/lib/api";
 
@@ -32,18 +32,18 @@ export function CommandPalette() {
 
   const items: Item[] = useMemo(
     () => [
-      { label: "Dashboard", hint: "Go to", icon: LayoutDashboard, run: () => navigate({ to: "/dashboard" }) },
-      { label: "Subscriptions", hint: "Go to", icon: CreditCard, run: () => navigate({ to: "/subscriptions" }) },
-      { label: "Upcoming Renewals", hint: "Go to", icon: Bell, run: () => navigate({ to: "/upcoming" }) },
-      { label: "Profile", hint: "Go to", icon: User, run: () => navigate({ to: "/profile" }) },
-      { label: "Add subscription", hint: "Action", icon: Plus, run: () => navigate({ to: "/subscriptions/new" }) },
+      { label: "Dashboard", hint: "Go to", icon: LayoutDashboard, run: () => navigate("/dashboard") },
+      { label: "Subscriptions", hint: "Go to", icon: CreditCard, run: () => navigate("/subscriptions") },
+      { label: "Upcoming Renewals", hint: "Go to", icon: Bell, run: () => navigate("/upcoming") },
+      { label: "Profile", hint: "Go to", icon: User, run: () => navigate("/profile") },
+      { label: "Add subscription", hint: "Action", icon: Plus, run: () => navigate("/subscriptions") },
       {
         label: "Log out",
         hint: "Action",
         icon: LogOut,
         run: () => {
           clearSession();
-          navigate({ to: "/sign-in", replace: true });
+          navigate("/sign-in", { replace: true });
         },
       },
     ],

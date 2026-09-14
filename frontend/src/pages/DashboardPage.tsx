@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { Bell, CreditCard, TrendingUp } from "lucide-react";
 import { AppShell, useAuthUser } from "@/components/renewly/app-shell";
 import { PageHeader, Pill, Skeleton, StatusBadge } from "@/components/renewly/primitives";
@@ -8,18 +8,9 @@ import { formatAmount, formatDate, formatPrice, greeting, monthlyValue, capitali
 import type { Subscription } from "@/lib/api";
 import { CountUp, Reveal } from "@/components/renewly/motion";
 
-export const Route = createFileRoute("/dashboard")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Renewly" },
-      { name: "description", content: "See total subscriptions, monthly spend and upcoming renewals at a glance." },
-      { property: "og:title", content: "Dashboard — Renewly" },
-      { property: "og:description", content: "Your subscription spend and renewals at a glance." },
-    ],
-  }),
-  component: DashboardPage,
-});
-
+// ------------------------------------------------------------------
+// StatCard — one metric tile with icon, animated count-up, and label
+// ------------------------------------------------------------------
 function StatCard({
   icon: Icon,
   value,
@@ -47,13 +38,15 @@ function StatCard({
           <CountUp value={value} format={format} />
         </p>
       )}
-
       <p className="mt-2 text-sm text-muted-foreground">{label}</p>
     </Reveal>
   );
 }
 
-function DashboardPage() {
+// ------------------------------------------------------------------
+// DashboardPage
+// ------------------------------------------------------------------
+export default function DashboardPage() {
   const { user } = useAuthUser();
   const subs = useSubscriptions();
   const upcoming = useUpcomingRenewals();
@@ -72,12 +65,9 @@ function DashboardPage() {
 
   return (
     <AppShell>
-      <PageHeader
-        title="Dashboard"
-        subtitle={`${hello}, ${user?.name ?? "there"} 👋`}
-      />
+      <PageHeader title="Dashboard" subtitle={`${hello}, ${user?.name ?? "there"} 👋`} />
 
-
+      {/* Stat Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <StatCard icon={CreditCard} value={all.length} label="Total Subscriptions" loading={subs.isLoading} />
         <StatCard
@@ -97,6 +87,7 @@ function DashboardPage() {
         />
       </div>
 
+      {/* Recent Subscriptions Table */}
       <section className="mt-10">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold">Recent Subscriptions</h2>
@@ -154,6 +145,7 @@ function DashboardPage() {
         </div>
       </section>
 
+      {/* Renewing Soon */}
       <section className="mt-10">
         <h2 className="mb-4 text-base font-semibold">Renewing Soon</h2>
         {upcoming.isLoading ? (
