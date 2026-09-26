@@ -17,6 +17,11 @@ const subscriptionSchema = new mongoose.Schema(
       enum: ["basic", "standard", "premium", "custom"],
       default: "standard",
     },
+    billingType:{
+      type: String,
+      enum: ["fixed", "payg"],
+      default: "fixed"
+    },
     price: {
       type: Number,
       required: [true, "Subscription amount is required"],
